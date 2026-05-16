@@ -1,9 +1,9 @@
 // Policy: single source of truth for *what* the UI layer should flatten.
-// Cosmetic tranche — it changes nothing about damage or game logic; it only
+// Cosmetic phase — it changes nothing about damage or game logic; it only
 // stops the UI from advertising level/tier so the screen matches the already
 // de-scaled numbers from the level/tier-flatten (damage) module.
 //
-// Why a separate cosmetic tranche (see suite design notes): hiding level/tier
+// Why a separate cosmetic phase (see suite design notes): hiding level/tier
 // in the UI means several *UI-controller* wraps, which are inherently more
 // patch-fragile than the single shared gameplay static. Isolating them here
 // keeps that fragility out of the gameplay module and lets this layer be

@@ -1,6 +1,6 @@
-# Cyberpunk Realism — progress & chantier tracker
+# Cyberpunk Realism — progress & workstream tracker
 
-Actionable state of every chantier. Vision/overview lives in this folder's
+Actionable state of every workstream. Vision/overview lives in this folder's
 [`README.md`](./README.md).
 
 ## Status legend
@@ -14,7 +14,7 @@ Actionable state of every chantier. Vision/overview lives in this folder's
 ## Workflow & merge policy
 
 - Integration branch: `feature/cyberpunk-realism`.
-- One chantier = one sub-branch `feature/cyberpunk-realism-<chantier>` (dash,
+- One workstream = one sub-branch `feature/cyberpunk-realism-<workstream>` (dash,
   not slash: a `feature/cyberpunk-realism/...` ref collides with the
   integration branch ref).
 - Sub-branch → PR into `feature/cyberpunk-realism`.
@@ -36,7 +36,7 @@ Until then, `IMPLEMENTED` modules stay on the feature branch by policy.
 
 ---
 
-## C1 — Level/Tier Damage Flatten (tranche 1)
+## C1 — Level/Tier Damage Flatten (phase 1)
 
 - **Status:** `IMPLEMENTED` · `BLOCKED` (in-game symbol verification)
 - **Branch:** on `feature/cyberpunk-realism` (was PR #11 → reverted from
@@ -57,7 +57,7 @@ Until then, `IMPLEMENTED` modules stay on the feature branch by policy.
   - [ ] Kill-switch off → vanilla scaling returns instantly.
 - **Mod-split:** standalone — ships as `level-tier-flatten-*` archive.
 
-## C2 — UI Flatten (tranche 2, cosmetic)
+## C2 — UI Flatten (phase 2, cosmetic)
 
 Stops the UI advertising level/tier so it matches C1's de-scaled numbers.
 Changes no game logic. Several fragile UI-controller wraps → split into
@@ -85,7 +85,7 @@ sub-items so each can go dry independently.
   (`UiFlattenPolicy.HiddenLevelText()` already provides the substitution).
 - **Candidate controllers:** `NameplateBarsLogicController` /
   `healthbarInjector` level setter (private level-text field name unknown —
-  do **not** speculatively code until confirmed; tranche-1 revert lesson).
+  do **not** speculatively code until confirmed; phase-1 revert lesson).
 - **Dry criteria:** nameplate shows no level; danger/threat coloring (if any)
   unaffected; kill-switch restores.
 
@@ -109,30 +109,34 @@ sub-items so each can go dry independently.
 
 ## C3 — Continuous "learn-by-doing" progression (Skyrim-like)
 
-- **Status:** `IDEA` · **architecture DECISION-PENDING**
+- **Status:** `IDEA` · **architecture DECIDED: start B, A is traction-gated**
 - **Researched seam:** progression is `PlayerDevelopmentData`, reached via
   `PlayerDevelopmentSystem.GetData(player)`; perk/attribute points are
   awarded on level-up and are redscript-modifiable. Reference
   implementations: `cp2077-neurespec` (psiberx) for attribute/perk/skill
   manipulation; the "Skillful" family already scales effects off skill
-  proficiencies — the closest existing analogue to this chantier.
+  proficiencies — the closest existing analogue to this workstream.
 - **Scope:** per-axis continuous growth. Axes (CP2077): attributes Body /
   Reflexes / Technical Ability / Intelligence / Cool; skills Handguns,
   Assault, Blades, Street Brawler, Athletics, Annihilation, Stealth,
   Engineering, Crafting, Quickhacking, Cold Blood. Use-based XP is already
   vanilla — the work is removing the milestone gating.
-- **Candidate architectures (the pending decision):**
-  - **A. Proficiency-continuous.** Drive effects directly off the continuous
-    skill-proficiency value; neutralise the perk/attribute *point* milestone
-    gating. Closest to the Skyrim feel. Large surface (stat reads spread
-    wide); needs a C2-like UI pass for the continuous value.
-  - **B. De-gate the points.** Keep the point system but unbottle the single
-    point-award seam in `PlayerDevelopmentData` so milestones stop being the
-    constraint. Minimal, reversible surface; still point-based underneath,
-    less "continuous" in feel than A.
-- **Recommendation:** start with **B** as a cheap, reversible increment that
-  validates the feel, then migrate toward **A** if a truly continuous feel is
-  wanted. Shares "continuous value + decay" building blocks with C4 and C6.
+- **Architectures (decision made — see suite doctrine in cross-cutting):**
+  - **B — chosen starting implementation (engine-adaptive).** Keep the point
+    system; unbottle the single point-award seam in `PlayerDevelopmentData`
+    so milestones stop being the constraint. Minimal, reversible surface;
+    painless across game updates; coexists with the modding ecosystem
+    (neurespec / Skillful). Still point-based underneath — less "continuous"
+    in feel than A, an accepted concession.
+  - **A — traction-gated future migration (deep overhaul).** Drive effects
+    directly off the continuous skill-proficiency value; neutralise the
+    perk/attribute *point* milestone gating entirely. Closest to the Skyrim
+    feel. Large surface (stat reads spread wide), own UI pass, and would
+    eventually need dedicated ecosystem addons. **Not abandoned —
+    explicitly deferred** until project traction justifies the cost.
+- **Decision:** ship **B** first to validate the feel cheaply and reversibly;
+  re-evaluate **A** only if traction warrants the deep-overhaul cost. Shares
+  "continuous value + decay" building blocks with C4 and C6.
 - **Open questions:** the single neutralisation seam; interaction with C1/C5
   damage terms; continuous-value UI.
 - **Risk:** medium. **Coding blocked by** the symbol-verification harness;
@@ -140,7 +144,7 @@ sub-items so each can go dry independently.
 
 ## C4 — Skill regression / decay
 
-- **Status:** `IDEA` · hardest chantier · depends on C3 architecture
+- **Status:** `IDEA` · hardest workstream · depends on C3 architecture
 - **Researched constraint:** the periodic tick is easy (game callbacks /
   delay system). The real obstacle is **persistence**: redscript has no clean
   per-mod persisted save field. Decay state must therefore either (a) ride a
@@ -149,8 +153,11 @@ sub-items so each can go dry independently.
   hacky and patch-fragile; or (c) wait until C3 exists (decay is only
   meaningful once there is a continuous value to decay).
 - **Reframed blocker:** persistence, not the tick.
-- **Recommendation:** gate C4 behind the C3 architecture decision and treat
-  persistence as its own isolated spike before any code.
+- **Recommendation (under the suite doctrine):** prefer **engine-native /
+  piggyback persistence** first; **defer the CET/RED4ext companion** (the
+  deep-overhaul path) until traction justifies a hard external dependency.
+  Still gate C4 behind C3's seam landing, and treat persistence as its own
+  isolated spike before any code.
 - **Risk:** high — new persisted subsystem. **Mod-split:** its own mod.
 
 ## C5 — Firearm vs. melee asymmetry (reframed: a scope-rule of C1)
@@ -194,6 +201,24 @@ sub-items so each can go dry independently.
   harness.
 - **Risk:** medium (design-heavy, far fewer parity concerns than combat).
   **Mod-split:** its own mod, reusing C3/C4 building blocks.
+
+## Suite doctrine — engine-adaptive first, deep overhaul on traction
+
+The governing principle for every workstream, generalised from the phase-1
+revert (do not fight unverified engine internals speculatively):
+
+> **Adapt to the engine first.** Accept the concessions; the payoff is
+> painless game updates and frictionless coexistence with the modding
+> ecosystem. Treat a deep-overhaul variant (one that would eventually need
+> dedicated ecosystem addons / hard external dependencies) as a **future
+> migration gated on project traction** — designed for, never abandoned,
+> but not paid for until the traction justifies the cost.
+
+Applications already recorded: **C3** ships B (engine-adaptive) with A as the
+traction-gated overhaul; **C4** prefers engine-native/piggyback persistence
+and defers the CET/RED4ext companion; **C5** lives inside C1's seam rather
+than adding a parallel system. New workstreams should state which side of this
+line they sit on.
 
 ## Cross-cutting backlog
 

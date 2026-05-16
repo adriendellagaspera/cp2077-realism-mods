@@ -1,6 +1,6 @@
 # Cyberpunk Realism — suite overview
 
-> Vision and current state. For the actionable, per-chantier tracker (status,
+> Vision and current state. For the actionable, per-workstream tracker (status,
 > branches, blockers, verification), see [`PROGRESS.md`](./PROGRESS.md).
 
 ## Vision
@@ -33,14 +33,14 @@ repos/mods without rework.
    documented composition, not rebuilt.
 4. **Modular & multi-repo-ready.** Standalone modules, extractable at no cost.
 5. **Discipline before `main`.** Work matures on the `feature/cyberpunk-realism`
-   integration branch (one dash-separated sub-branch per chantier). A module
+   integration branch (one dash-separated sub-branch per workstream). A module
    reaches `main` only when **dry**: CI green **and** its wrapped game symbols
    verified in-game via `r6/cache/redscript.log` (or switched to the
    documented fallback seam). Public `main` never carries unfinished work.
 
 ## Modules — what the suite does to date
 
-| Module | Tranche | Concern | State |
+| Module | Phase | Concern | State |
 |---|---|---|---|
 | Level/Tier Damage Flatten | 1 | Remove level + item-tier influence on damage (shared `RPGManager` static), strict NPC parity | Implemented, **pending in-game symbol verification** |
 | UI Flatten | 2 | Stop the UI advertising level/tier (cosmetic) so the screen matches the de-scaled numbers | Rarity-colour seam implemented (best-effort); level-hiding sub-items tracked |
@@ -54,15 +54,15 @@ health bars make time-to-kill longer than expected.
 
 ## Roadmap (directions — to be challenged, not committed)
 
-These are candidate chantiers; several are large enough to become their own
+These are candidate workstreams; several are large enough to become their own
 mods. Tracked with scope and risk in [`PROGRESS.md`](./PROGRESS.md).
 
-- **Continuous "learn-by-doing" progression** (Skyrim-like, *architecture
-  open*): per-axis continuous growth (attributes Body/Reflexes/Technical
-  Ability/Intelligence/Cool; the skill list). Use-based growth is already
-  vanilla — the work is removing milestone gating. Two candidate
-  architectures (drive off the continuous proficiency vs. de-gate the point
-  system) are still open; see `PROGRESS.md` C3.
+- **Continuous "learn-by-doing" progression** (Skyrim-like): per-axis
+  continuous growth. Use-based growth is already vanilla — the work is
+  removing milestone gating. **Decided** under the suite doctrine
+  (engine-adaptive first, deep overhaul on traction): ship the
+  engine-adaptive de-gate first; the full continuous overhaul is a
+  traction-gated future migration. See `PROGRESS.md` C3 + suite doctrine.
 - **Skill regression / decay** (the hard one): the real obstacle is
   *persistence*, not the tick — redscript has no clean per-mod save state.
   Highest risk; depends on the progression architecture; its own mod.
