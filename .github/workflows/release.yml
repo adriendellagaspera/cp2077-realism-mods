@@ -69,15 +69,15 @@ jobs:
 
           flatten2x="dist-flatten-cp2077-2x/${flatten_dir}"
           mkdir -p "$flatten2x"
-          cp levelTierFlatten.reds "$flatten2x/"
-          cp levelTierFlatten_cp2077-2x.reds "$flatten2x/"
-          cp LICENSE README.md dist-flatten-cp2077-2x/
+          cp cyberpunk-realism/levelTierFlatten.reds "$flatten2x/"
+          cp cyberpunk-realism/levelTierFlatten_cp2077-2x.reds "$flatten2x/"
+          cp LICENSE cyberpunk-realism/README.md dist-flatten-cp2077-2x/
 
           flatten1x="dist-flatten-cp2077-1x/${flatten_dir}"
           mkdir -p "$flatten1x"
-          cp levelTierFlatten.reds "$flatten1x/"
-          cp levelTierFlatten_cp2077-1x.reds "$flatten1x/"
-          cp LICENSE README.md dist-flatten-cp2077-1x/
+          cp cyberpunk-realism/levelTierFlatten.reds "$flatten1x/"
+          cp cyberpunk-realism/levelTierFlatten_cp2077-1x.reds "$flatten1x/"
+          cp LICENSE cyberpunk-realism/README.md dist-flatten-cp2077-1x/
 
           echo "version=$version" >> "$GITHUB_ENV"
 

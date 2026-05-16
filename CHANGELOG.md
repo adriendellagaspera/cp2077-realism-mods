@@ -33,5 +33,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the existing `handleStorageSlot_*` per-patch compat pattern.
   - CI presence check and release workflow extended with two new archives
     `level-tier-flatten-{version}-cp2077-{2x,1x}.zip`.
+- UI Flatten module (Cyberpunk Realism, tranche 2 — cosmetic): stops the UI
+  advertising level/tier so it matches the de-scaled damage numbers.
+  - `UiFlattenPolicy` / `UiFlattenGate` — neutral colour quality + hidden-
+    level text, default-on kill-switch with vanilla fallthrough.
+  - `uiFlatten_cp2077-{2x,1x}.reds` — rarity-colour neutralisation at the
+    quality→colour resolver (best-effort symbol; level-hiding sub-items
+    tracked in PROGRESS rather than speculatively coded).
+  - CI presence check extended with the three `uiFlatten*` files.
+- Cyberpunk Realism suite moved into its own `cyberpunk-realism/` folder
+  (code + docs), extractable cleanly; CI presence and release staging
+  paths rewired accordingly.
+- Suite documentation: `cyberpunk-realism/README.md` (vision + current
+  state) and `cyberpunk-realism/PROGRESS.md` (actionable per-chantier
+  tracker, in-progress and roadmap, with multi-mod split notes and merge
+  policy).
 
 [Unreleased]: https://github.com/adriendellagaspera/mod-stash-only-disassemble/commits/main

@@ -17,9 +17,12 @@ jobs:
           test -f stashOnlyDisassemble.reds
           test -f handleStorageSlot_cp2077-2x.reds
           test -f handleStorageSlot_cp2077-1x.reds
-          test -f levelTierFlatten.reds
-          test -f levelTierFlatten_cp2077-2x.reds
-          test -f levelTierFlatten_cp2077-1x.reds
+          test -f cyberpunk-realism/levelTierFlatten.reds
+          test -f cyberpunk-realism/levelTierFlatten_cp2077-2x.reds
+          test -f cyberpunk-realism/levelTierFlatten_cp2077-1x.reds
+          test -f cyberpunk-realism/uiFlatten.reds
+          test -f cyberpunk-realism/uiFlatten_cp2077-2x.reds
+          test -f cyberpunk-realism/uiFlatten_cp2077-1x.reds
 
       - name: Reject merge-conflict markers
         run: |
