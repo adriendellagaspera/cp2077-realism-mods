@@ -64,12 +64,29 @@ jobs:
           cp handleStorageSlot_cp2077-1x.reds "$stage1x/"
           cp LICENSE README.md dist-cp2077-1x/
 
+          # --- level-tier-flatten module: standalone, mirrors the split above ---
+          flatten_dir="r6/scripts/levelTierFlatten"
+
+          flatten2x="dist-flatten-cp2077-2x/${flatten_dir}"
+          mkdir -p "$flatten2x"
+          cp levelTierFlatten.reds "$flatten2x/"
+          cp levelTierFlatten_cp2077-2x.reds "$flatten2x/"
+          cp LICENSE README.md dist-flatten-cp2077-2x/
+
+          flatten1x="dist-flatten-cp2077-1x/${flatten_dir}"
+          mkdir -p "$flatten1x"
+          cp levelTierFlatten.reds "$flatten1x/"
+          cp levelTierFlatten_cp2077-1x.reds "$flatten1x/"
+          cp LICENSE README.md dist-flatten-cp2077-1x/
+
           echo "version=$version" >> "$GITHUB_ENV"
 
       - name: Create archives
         run: |
           (cd dist-cp2077-2x && zip -r "../stash-only-disassemble-${version}-cp2077-2x.zip" .)
           (cd dist-cp2077-1x && zip -r "../stash-only-disassemble-${version}-cp2077-1x.zip" .)
+          (cd dist-flatten-cp2077-2x && zip -r "../level-tier-flatten-${version}-cp2077-2x.zip" .)
+          (cd dist-flatten-cp2077-1x && zip -r "../level-tier-flatten-${version}-cp2077-1x.zip" .)
 
       - name: Publish release
         env:
@@ -78,5 +95,7 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             "stash-only-disassemble-${version}-cp2077-2x.zip" \
             "stash-only-disassemble-${version}-cp2077-1x.zip" \
+            "level-tier-flatten-${version}-cp2077-2x.zip" \
+            "level-tier-flatten-${version}-cp2077-1x.zip" \
             --title "stash-only-disassemble ${version}" \
             --generate-notes

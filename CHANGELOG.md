@@ -21,5 +21,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   annotation allowlist) and `redscript-cli format` parse check.
 - Release workflow: tag `v*` → builds the install ZIP and publishes a GitHub
   Release with auto-generated notes.
+- Level/Tier Flatten module (Cyberpunk Realism, tranche 1) — standalone
+  companion that neutralises RPG level + item-tier influence on damage with
+  strict, structural NPC parity:
+  - `LevelTierFlattenPolicy` — single source of truth for the flatten values
+    (neutral level coefficient, neutral tier multiplier, scalar clamp helper).
+  - `LevelTierFlattenGate` — static kill-switch (default on); every wrap falls
+    through to vanilla `wrappedMethod(...)` when off (neutralise, not delete).
+  - Split `levelTierFlatten_cp2077-{2x,1x}.reds` wraps on the shared
+    `RPGManager` scaling-coefficient static (no player/NPC branch), mirroring
+    the existing `handleStorageSlot_*` per-patch compat pattern.
+  - CI presence check and release workflow extended with two new archives
+    `level-tier-flatten-{version}-cp2077-{2x,1x}.zip`.
 
 [Unreleased]: https://github.com/adriendellagaspera/mod-stash-only-disassemble/commits/main
