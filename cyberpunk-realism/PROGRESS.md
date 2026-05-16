@@ -109,39 +109,100 @@ sub-items so each can go dry independently.
 
 ## C3 — Continuous "learn-by-doing" progression (Skyrim-like)
 
-- **Status:** `IDEA`
-- **Scope:** replace level-milestone / perk-point gating with continuous
-  per-axis growth. Axes (CP2077): attributes Body / Reflexes / Technical
-  Ability / Intelligence / Cool; skills Handguns, Assault, Blades, Street
-  Brawler, Athletics, Annihilation, Stealth, Engineering, Crafting,
-  Quickhacking, Cold Blood. Use-based XP already vanilla → the work is
-  neutralising the milestone gating and driving effects off a continuous
-  proficiency value (redscript stat-read seam).
-- **Open questions:** which gate is the single neutralisation point;
-  interaction with C1/C5 damage terms; UI for a continuous value (C2-like).
-- **Risk:** medium. **Mod-split:** likely its own mod.
+- **Status:** `IDEA` · **architecture DECISION-PENDING**
+- **Researched seam:** progression is `PlayerDevelopmentData`, reached via
+  `PlayerDevelopmentSystem.GetData(player)`; perk/attribute points are
+  awarded on level-up and are redscript-modifiable. Reference
+  implementations: `cp2077-neurespec` (psiberx) for attribute/perk/skill
+  manipulation; the "Skillful" family already scales effects off skill
+  proficiencies — the closest existing analogue to this chantier.
+- **Scope:** per-axis continuous growth. Axes (CP2077): attributes Body /
+  Reflexes / Technical Ability / Intelligence / Cool; skills Handguns,
+  Assault, Blades, Street Brawler, Athletics, Annihilation, Stealth,
+  Engineering, Crafting, Quickhacking, Cold Blood. Use-based XP is already
+  vanilla — the work is removing the milestone gating.
+- **Candidate architectures (the pending decision):**
+  - **A. Proficiency-continuous.** Drive effects directly off the continuous
+    skill-proficiency value; neutralise the perk/attribute *point* milestone
+    gating. Closest to the Skyrim feel. Large surface (stat reads spread
+    wide); needs a C2-like UI pass for the continuous value.
+  - **B. De-gate the points.** Keep the point system but unbottle the single
+    point-award seam in `PlayerDevelopmentData` so milestones stop being the
+    constraint. Minimal, reversible surface; still point-based underneath,
+    less "continuous" in feel than A.
+- **Recommendation:** start with **B** as a cheap, reversible increment that
+  validates the feel, then migrate toward **A** if a truly continuous feel is
+  wanted. Shares "continuous value + decay" building blocks with C4 and C6.
+- **Open questions:** the single neutralisation seam; interaction with C1/C5
+  damage terms; continuous-value UI.
+- **Risk:** medium. **Coding blocked by** the symbol-verification harness;
+  **design is unblocked** (this entry). **Mod-split:** likely its own mod.
 
 ## C4 — Skill regression / decay
 
-- **Status:** `IDEA` · hardest chantier
-- **Scope:** skills decay if not practised. No native CP2077 decay → custom
-  periodic tick + persisted per-axis state (redscript).
-- **Risk:** high — new persisted subsystem; main scope driver of any tranche
-  it lands in. Isolate hard. **Mod-split:** almost certainly its own mod.
+- **Status:** `IDEA` · hardest chantier · depends on C3 architecture
+- **Researched constraint:** the periodic tick is easy (game callbacks /
+  delay system). The real obstacle is **persistence**: redscript has no clean
+  per-mod persisted save field. Decay state must therefore either (a) ride a
+  CET/RED4ext companion (RedData-style sidecar) — a hard external dependency;
+  (b) piggyback an already-persisted player stat/quest fact as the store —
+  hacky and patch-fragile; or (c) wait until C3 exists (decay is only
+  meaningful once there is a continuous value to decay).
+- **Reframed blocker:** persistence, not the tick.
+- **Recommendation:** gate C4 behind the C3 architecture decision and treat
+  persistence as its own isolated spike before any code.
+- **Risk:** high — new persisted subsystem. **Mod-split:** its own mod.
 
-## C5 — Firearm vs. melee damage asymmetry
+## C5 — Firearm vs. melee asymmetry (reframed: a scope-rule of C1)
 
-- **Status:** `PLANNED` (composes with C1)
-- **Scope:** firearms = weapon-archetype damage only (bullet independent of
-  shooter); melee/blades = archetype **+ Body/strength term**. Reintroduce a
-  *physical* term for melee only, at the same `RPGManager` seam C1 wraps,
-  after the flatten — so it stacks cleanly on a de-scaled base.
-- **Depends on:** C1 dry (shares the seam).
-- **Risk:** medium. **Mod-split:** could fold into C1's module or ship as an
-  add-on toggled by its own Gate.
+- **Status:** `PLANNED` — **reframed**, lives inside `levelTierFlatten`.
+- **Correction (vanilla already does part of this):** **Body** natively
+  buffs melee (blunt / Street Brawler / Gorilla Arms / fists); **blades**
+  scale mainly with **Reflexes**; Cool feeds crit/stealth. This
+  *attribute-driven* path is **separate** from the level/tier *coefficient*
+  C1 flattens. So C5 is not "add a Body term that doesn't exist".
+- **Real scope:** make C1's flatten **asymmetric** — it must strip
+  player-scaling from **firearms** (bullet independent of shooter) while
+  **not** collaterally flattening the attribute→melee term (force still
+  matters in a knife/fist fight). Optionally normalise the Body→melee
+  relationship for realism afterward.
+- **Hard dependency:** in-game verification of *which* path C1's `RPGManager`
+  seam actually touches (attribute term vs level/tier coefficient) — same
+  harness as C1. Until that is known, C5's exact code is undefined.
+- **Dry criteria:**
+  - [ ] Firearm per-hit damage independent of shooter attributes & level.
+  - [ ] Melee retains Body/Reflexes attribute scaling post-flatten.
+  - [ ] Parity both ways; kill-switch (own Gate sub-toggle) restores vanilla.
+- **Mod-split:** inside the `levelTierFlatten` module (it defines what C1
+  does/doesn't flatten), gated by its own sub-toggle.
+
+## C6 — Organic notoriety / heat system (new — from design discussion)
+
+- **Status:** `IDEA`
+- **Motivation:** vanilla notoriety/wanted is a coarse, under-used
+  continuous-ish system (crude tiers, near-binary decay). It is a strong
+  *first* vehicle for "continuous value + organic decay" mechanics because,
+  unlike C3, it does **not** fight the perk/point system — lower risk.
+- **Target (to scope):** graduated, organic escalation; faction/location
+  awareness; behaviour- and time-based decay; witness/evidence logic — a
+  deeper heat model than the vanilla tier ladder.
+- **Synergy:** shares design bricks with C3 (continuous value) and C4
+  (decay curve, persistence) → a good lower-risk prototype for those
+  mechanics before committing them to progression.
+- **Candidate seam:** the wanted/prevention/heat system (e.g.
+  `PreventionSystem` / wanted-level data) — confirm via the verification
+  harness.
+- **Risk:** medium (design-heavy, far fewer parity concerns than combat).
+  **Mod-split:** its own mod, reusing C3/C4 building blocks.
 
 ## Cross-cutting backlog
 
+- **Symbol-verification harness is the top unblocker.** C1, C2a and C5 all
+  gate on it (see the harness section above). C3, C4 and C6 *design* can
+  progress without a game; their *code* does not.
+- **Shared "continuous value + decay + persistence" toolkit:** C3, C4 and C6
+  converge on the same primitives. Factor a shared module out **only once
+  ≥2 of them actually need it** — do not build it speculatively.
 - **Release packaging per module:** `release.yml` already builds
   `level-tier-flatten-*`. Add `ui-flatten-*` (and future modules) **only when
   each is dry** — deferred deliberately to avoid shipping unverified config.
