@@ -57,18 +57,24 @@ health bars make time-to-kill longer than expected.
 These are candidate chantiers; several are large enough to become their own
 mods. Tracked with scope and risk in [`PROGRESS.md`](./PROGRESS.md).
 
-- **Continuous "learn-by-doing" progression** (Skyrim-like): replace the
-  level-milestone / perk-point gating with continuous per-axis progression
-  (CP2077 attributes: Body, Reflexes, Technical Ability, Intelligence, Cool;
-  skills: Handguns, Assault, Blades, Street Brawler, Athletics, Annihilation,
-  Stealth, Engineering, Crafting, Quickhacking, Cold Blood). Use-based growth
-  already exists in vanilla — the work is neutralising the milestone gating.
-- **Skill regression / decay** (the hard one): no native decay in CP2077 → a
-  custom tick + persisted-state subsystem. Highest risk; likely its own mod.
-- **Firearm vs. melee damage asymmetry**: firearms driven by weapon archetype
-  alone (the bullet does not depend on the shooter); melee = archetype **+ a
-  Body/strength term** (force matters). Composes with Module 1 at the same
-  `RPGManager` seam.
+- **Continuous "learn-by-doing" progression** (Skyrim-like, *architecture
+  open*): per-axis continuous growth (attributes Body/Reflexes/Technical
+  Ability/Intelligence/Cool; the skill list). Use-based growth is already
+  vanilla — the work is removing milestone gating. Two candidate
+  architectures (drive off the continuous proficiency vs. de-gate the point
+  system) are still open; see `PROGRESS.md` C3.
+- **Skill regression / decay** (the hard one): the real obstacle is
+  *persistence*, not the tick — redscript has no clean per-mod save state.
+  Highest risk; depends on the progression architecture; its own mod.
+- **Firearm vs. melee asymmetry** (a *scope-rule of Module 1*, not a new
+  term): Body already buffs melee natively and blades scale with Reflexes —
+  that attribute path is separate from the level/tier coefficient. The work
+  is making Module 1's flatten *asymmetric* — strip player-scaling from
+  firearms while preserving the attribute→melee path. See `PROGRESS.md` C5.
+- **Organic notoriety / heat** (new): the vanilla wanted system is a coarse,
+  under-used continuous-ish system — a lower-risk first vehicle for the
+  continuous-value + organic-decay mechanics also needed by progression/decay.
+  See `PROGRESS.md` C6.
 
 ## How it relates to this repo
 
