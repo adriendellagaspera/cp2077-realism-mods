@@ -1,6 +1,6 @@
-# Cyberpunk Realism — progress & chantier tracker
+# Cyberpunk Realism — progress & workstream tracker
 
-Actionable state of every chantier. Vision/overview lives in this folder's
+Actionable state of every workstream. Vision/overview lives in this folder's
 [`README.md`](./README.md).
 
 ## Status legend
@@ -14,7 +14,7 @@ Actionable state of every chantier. Vision/overview lives in this folder's
 ## Workflow & merge policy
 
 - Integration branch: `feature/cyberpunk-realism`.
-- One chantier = one sub-branch `feature/cyberpunk-realism-<chantier>` (dash,
+- One workstream = one sub-branch `feature/cyberpunk-realism-<workstream>` (dash,
   not slash: a `feature/cyberpunk-realism/...` ref collides with the
   integration branch ref).
 - Sub-branch → PR into `feature/cyberpunk-realism`.
@@ -115,7 +115,7 @@ sub-items so each can go dry independently.
   awarded on level-up and are redscript-modifiable. Reference
   implementations: `cp2077-neurespec` (psiberx) for attribute/perk/skill
   manipulation; the "Skillful" family already scales effects off skill
-  proficiencies — the closest existing analogue to this chantier.
+  proficiencies — the closest existing analogue to this workstream.
 - **Scope:** per-axis continuous growth. Axes (CP2077): attributes Body /
   Reflexes / Technical Ability / Intelligence / Cool; skills Handguns,
   Assault, Blades, Street Brawler, Athletics, Annihilation, Stealth,
@@ -128,14 +128,14 @@ sub-items so each can go dry independently.
     painless across game updates; coexists with the modding ecosystem
     (neurespec / Skillful). Still point-based underneath — less "continuous"
     in feel than A, an accepted concession.
-  - **A — traction-gated future migration (deep refonte).** Drive effects
+  - **A — traction-gated future migration (deep overhaul).** Drive effects
     directly off the continuous skill-proficiency value; neutralise the
     perk/attribute *point* milestone gating entirely. Closest to the Skyrim
     feel. Large surface (stat reads spread wide), own UI pass, and would
     eventually need dedicated ecosystem addons. **Not abandoned —
     explicitly deferred** until project traction justifies the cost.
 - **Decision:** ship **B** first to validate the feel cheaply and reversibly;
-  re-evaluate **A** only if traction warrants the deep-refonte cost. Shares
+  re-evaluate **A** only if traction warrants the deep-overhaul cost. Shares
   "continuous value + decay" building blocks with C4 and C6.
 - **Open questions:** the single neutralisation seam; interaction with C1/C5
   damage terms; continuous-value UI.
@@ -144,7 +144,7 @@ sub-items so each can go dry independently.
 
 ## C4 — Skill regression / decay
 
-- **Status:** `IDEA` · hardest chantier · depends on C3 architecture
+- **Status:** `IDEA` · hardest workstream · depends on C3 architecture
 - **Researched constraint:** the periodic tick is easy (game callbacks /
   delay system). The real obstacle is **persistence**: redscript has no clean
   per-mod persisted save field. Decay state must therefore either (a) ride a
@@ -155,7 +155,7 @@ sub-items so each can go dry independently.
 - **Reframed blocker:** persistence, not the tick.
 - **Recommendation (under the suite doctrine):** prefer **engine-native /
   piggyback persistence** first; **defer the CET/RED4ext companion** (the
-  deep-refonte path) until traction justifies a hard external dependency.
+  deep-overhaul path) until traction justifies a hard external dependency.
   Still gate C4 behind C3's seam landing, and treat persistence as its own
   isolated spike before any code.
 - **Risk:** high — new persisted subsystem. **Mod-split:** its own mod.
@@ -202,22 +202,22 @@ sub-items so each can go dry independently.
 - **Risk:** medium (design-heavy, far fewer parity concerns than combat).
   **Mod-split:** its own mod, reusing C3/C4 building blocks.
 
-## Suite doctrine — engine-adaptive first, deep refonte on traction
+## Suite doctrine — engine-adaptive first, deep overhaul on traction
 
-The governing principle for every chantier, generalised from the tranche-1
+The governing principle for every workstream, generalised from the tranche-1
 revert (do not fight unverified engine internals speculatively):
 
 > **Adapt to the engine first.** Accept the concessions; the payoff is
 > painless game updates and frictionless coexistence with the modding
-> ecosystem. Treat a deep-refonte variant (one that would eventually need
+> ecosystem. Treat a deep-overhaul variant (one that would eventually need
 > dedicated ecosystem addons / hard external dependencies) as a **future
 > migration gated on project traction** — designed for, never abandoned,
 > but not paid for until the traction justifies the cost.
 
 Applications already recorded: **C3** ships B (engine-adaptive) with A as the
-traction-gated refonte; **C4** prefers engine-native/piggyback persistence
+traction-gated overhaul; **C4** prefers engine-native/piggyback persistence
 and defers the CET/RED4ext companion; **C5** lives inside C1's seam rather
-than adding a parallel system. New chantiers should state which side of this
+than adding a parallel system. New workstreams should state which side of this
 line they sit on.
 
 ## Cross-cutting backlog
