@@ -40,7 +40,7 @@ repos/mods without rework.
 
 ## Modules — what the suite does to date
 
-| Module | Tranche | Concern | State |
+| Module | Phase | Concern | State |
 |---|---|---|---|
 | Level/Tier Damage Flatten | 1 | Remove level + item-tier influence on damage (shared `RPGManager` static), strict NPC parity | Implemented, **pending in-game symbol verification** |
 | UI Flatten | 2 | Stop the UI advertising level/tier (cosmetic) so the screen matches the de-scaled numbers | Rarity-colour seam implemented (best-effort); level-hiding sub-items tracked |

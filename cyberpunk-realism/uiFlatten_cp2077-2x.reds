@@ -11,7 +11,7 @@
 // The level-hiding concerns (enemy nameplate, item "required level"
 // tooltip, level-up screen) are deliberately NOT speculatively coded here.
 // Each needs a private-field / controller name we cannot confirm from CI,
-// and the tranche-1 revert showed unverified guesses are a liability. They
+// and the phase-1 revert showed unverified guesses are a liability. They
 // are tracked as discrete, actionable items in PROGRESS.md with their
 // candidate controllers, to be coded once confirmed.
 //

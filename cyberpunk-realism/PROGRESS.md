@@ -36,7 +36,7 @@ Until then, `IMPLEMENTED` modules stay on the feature branch by policy.
 
 ---
 
-## C1 — Level/Tier Damage Flatten (tranche 1)
+## C1 — Level/Tier Damage Flatten (phase 1)
 
 - **Status:** `IMPLEMENTED` · `BLOCKED` (in-game symbol verification)
 - **Branch:** on `feature/cyberpunk-realism` (was PR #11 → reverted from
@@ -57,7 +57,7 @@ Until then, `IMPLEMENTED` modules stay on the feature branch by policy.
   - [ ] Kill-switch off → vanilla scaling returns instantly.
 - **Mod-split:** standalone — ships as `level-tier-flatten-*` archive.
 
-## C2 — UI Flatten (tranche 2, cosmetic)
+## C2 — UI Flatten (phase 2, cosmetic)
 
 Stops the UI advertising level/tier so it matches C1's de-scaled numbers.
 Changes no game logic. Several fragile UI-controller wraps → split into
@@ -85,7 +85,7 @@ sub-items so each can go dry independently.
   (`UiFlattenPolicy.HiddenLevelText()` already provides the substitution).
 - **Candidate controllers:** `NameplateBarsLogicController` /
   `healthbarInjector` level setter (private level-text field name unknown —
-  do **not** speculatively code until confirmed; tranche-1 revert lesson).
+  do **not** speculatively code until confirmed; phase-1 revert lesson).
 - **Dry criteria:** nameplate shows no level; danger/threat coloring (if any)
   unaffected; kill-switch restores.
 
@@ -204,7 +204,7 @@ sub-items so each can go dry independently.
 
 ## Suite doctrine — engine-adaptive first, deep overhaul on traction
 
-The governing principle for every workstream, generalised from the tranche-1
+The governing principle for every workstream, generalised from the phase-1
 revert (do not fight unverified engine internals speculatively):
 
 > **Adapt to the engine first.** Accept the concessions; the payoff is
