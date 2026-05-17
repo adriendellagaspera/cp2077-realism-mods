@@ -2,6 +2,34 @@
 # -*- coding: utf-8 -*-
 """Realistic Components RC1 — recipe / disassembly de-tiering generator.
 
+#############################################################################
+# REFUTED SCHEMA — NON-FUNCTIONAL SCAFFOLD — DO NOT USE AS-IS
+#############################################################################
+Adversarial review (2026-05-17; psiberx TweakXL wiki, CDPR docs, v1ld
+crafting gist) found this generator's schema is contradicted by the docs:
+
+  * Element shape is FLAT — `amount` + `ingredient: Items.X` (a direct
+    TweakDBID) — NOT the nested `ingredient: {item, quantity}` / `quantity`
+    this tool extracts. Against a real WolvenKit dump every recipe is
+    silently skipped (extraction returns None) -> empty output.
+  * TweakXL has NO documented `array[index].subfield` flat path; Form A
+    (`elements[0].ingredient.item:`) is likely invalid syntax.
+  * Form C uses `!append-once`, which APPENDS — it does not replace; vanilla
+    tiered ingredients would remain live.
+  * The recipe record-type string is likely the long schema name; real
+    dumps/TweakXL use the short form -> zero matches.
+  * The disassembly pass keys on `gamedataItem_Record` heuristics — wrong
+    record family.
+
+The tool is internally consistent against its own (invented) schema and its
+"recipes exist but none matched" guard does fire — that guard is the only
+real safety net. It MUST be re-derived (flat `amount`/`ingredient`,
+short record type, documented array mutation instead of index paths,
+correct disassembly family) AND verified against a real TweakDB dump in a
+real install before it can emit shippable YAML. Until then it is a
+scaffold, not a working generator.
+#############################################################################
+
 WHAT THIS IS
     A BUILD-TIME tool. It is NOT run by the game and NOT loaded by TweakXL.
     It reads a TweakDB dump, finds every crafting recipe (and disassembly
