@@ -154,6 +154,47 @@ jobs:
               yaml.safe_load(path.read_text(encoding='utf-8'))
               print(f"OK {path}")
 
+      - name: Reject one-p "scraping" misspelling (naming lock)
+        run: |
+          # Feature is "scrapping" (gerund of *to scrap*); one-p forms
+          # are wrong. Workflows are excluded so this guard, whose own
+          # pattern necessarily contains the forbidden string, does not
+          # match itself.
+          if git grep -nIE 'immersive-scraping|immersiveScraping|\bscraping\b' \
+               -- '*.md' '*.reds' '*.yml' '*.yaml' ':!.github/workflows'; then
+            echo "Forbidden one-p 'scraping' found; the term is 'scrapping'." >&2
+            exit 1
+          fi
+
+      - name: Check Markdown relative links resolve
+        shell: python {0}
+        run: |
+          import pathlib, re, subprocess, sys
+          link_re = re.compile(r'\]\(([^)]+)\)|\]:[ \t]*(\S+)')
+          tracked = subprocess.run(
+              ['git', 'ls-files', '-z', '*.md'],
+              capture_output=True, text=True, check=True,
+          ).stdout.split('\0')
+          failed = False
+          for rel in filter(None, tracked):
+              md = pathlib.Path(rel)
+              for n, line in enumerate(md.read_text(encoding='utf-8').splitlines(), 1):
+                  for m in link_re.finditer(line):
+                      target = (m.group(1) or m.group(2) or '').strip()
+                      if not target:
+                          continue
+                      target = target.split()[0]
+                      low = target.lower()
+                      if low.startswith(('http:', 'https:', 'mailto:', '#', '//')):
+                          continue
+                      path_part = target.split('#', 1)[0]
+                      if not path_part:
+                          continue
+                      if not (md.parent / path_part).resolve().exists():
+                          print(f"{md}:{n}: broken relative link -> {target}", file=sys.stderr)
+                          failed = True
+          sys.exit(1 if failed else 0)
+
   redscript-parse:
     name: "redscript parse (${{ matrix.tag }})"
     runs-on: ubuntu-latest

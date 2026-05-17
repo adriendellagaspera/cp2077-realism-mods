@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-17
+
 ### Changed
 
 - Renamed **Stash Only Disassemble → Immersive Scrapping** and moved the mod
@@ -36,4 +38,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release workflow: tag `v*` → builds the install ZIP and publishes a GitHub
   Release with auto-generated notes.
 
-[Unreleased]: https://github.com/adriendellagaspera/cp2077-realism-mods/commits/main
+[Unreleased]: https://github.com/adriendellagaspera/cp2077-realism-mods/compare/v1.0.0...main
+[1.0.0]: https://github.com/adriendellagaspera/cp2077-realism-mods/releases/tag/v1.0.0
