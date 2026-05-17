@@ -41,7 +41,7 @@ body:
     attributes:
       label: Pre-flight
       options:
-        - label: The only file I added is `r6/scripts/stashOnlyDisassemble/stashOnlyDisassemble.reds`.
+        - label: The only files I added are under `r6/scripts/immersiveScrapping/`.
           required: true
         - label: I searched existing issues and didn't find a duplicate.
           required: true

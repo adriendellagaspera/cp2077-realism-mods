@@ -1,0 +1,6 @@
+# Claude Code harness / agent-local state (worktrees, plans) — never committed.
+.claude/
+
+# Python build artefacts.
+__pycache__/
+*.pyc
