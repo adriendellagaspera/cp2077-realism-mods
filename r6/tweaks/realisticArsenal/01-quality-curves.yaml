@@ -12,8 +12,10 @@
 #   This curve cannot be authored blind. Curve record names, the curve point
 #   structure, and which curve(s) actually feed the weapon damage ramp from
 #   quality are NOT knowable without a real TweakDB dump. Authoring guessed
-#   curve names here would FAIL SILENTLY (wrong TweakDBID = ignored, no error)
-#   and give a false "done" signal — the worst outcome for this facet.
+#   curve names here would fail semantically (intended record untouched) AND,
+#   per psiberx TweakXL docs, an unknown name CREATES A NEW (junk) FLAT and
+#   ambiguous implicit types can THROW — not a harmless no-op. Either way it
+#   gives a false "done" signal — the worst outcome for this facet.
 #
 # WHAT A DUMP MUST CONFIRM BEFORE THIS FILE IS FILLED IN
 #   1. The exact curve record path(s) mapping quality -> damage multiplier.
@@ -36,7 +38,7 @@
 # DO NOT SHIP UNTIL DUMP-CONFIRMED
 #   This file is intentionally inert (no top-level records). Leaving it inert
 #   is correct: it documents the known gap without emitting guessed overrides
-#   that would silently no-op. When a dump is available, replace this stub with
+#   (which would junk-flat / error, not no-op). When a dump is available, replace this stub with
 #   verified curve overrides and remove this banner.
 # #############################################################################
 

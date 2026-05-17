@@ -14,9 +14,10 @@
 #   This is the LARGEST UNKNOWN in facet e. The full set of loot tables,
 #   vendor item-package records, and upgrade/tier-up records — and the flat on
 #   each that carries the assigned quality — CANNOT be enumerated without a
-#   real TweakDB dump. There is no safe "guess the table names" path: wrong
-#   TweakDBIDs FAIL SILENTLY, so a guessed file would look done while items
-#   keep dropping tiered.
+#   real TweakDB dump. There is no safe "guess the table names" path: per
+#   psiberx TweakXL docs a wrong TweakDBID creates a new (junk) flat / can
+#   throw — it does NOT safely no-op — so a guessed file would look done (or
+#   pollute TweakDB) while items keep dropping tiered.
 #
 # WHAT A DUMP MUST CONFIRM BEFORE THIS FILE IS FILLED IN
 #   1. The loot/drop records that assign weapon quality (and their quality

@@ -125,21 +125,28 @@ seam.
   unknown — do **not** speculatively code until confirmed (phase-1 revert
   lesson). Dry per sub-item: label gone, function intact, kill-switch restores.
 
-**e — Loot / weapon-tier removal** (NEW) · `IMPLEMENTED` (data scaffold landed;
-not yet dump-confirmed — see "falsifiable claims")
+**e — Loot / weapon-tier removal** (NEW) · `BLOCKED` (TweakDB-dump-gated) ·
+spike "shape confirmed" conclusion **REFUTED** — see "refutation outcome"
 - **Scope:** a same weapon at drop/vendor/upgrade is one object, not a
   Common→Iconic ladder. No mod removes the scale (gap holds — medium
   confidence, manual Nexus pass still advised).
-- **Surface (decided):** **BUILD via TweakXL data, no redscript.** Override the
-  `Quality.*` stat-modifier records + quality stat curves so every tier
-  resolves identically, and rewrite loot/vendor/upgrade quality entries.
-  `UIData` carries the rarity colour/label (data-side too).
-- **Scope ceiling:** the engine `RPGManager` scaling *shape* is not
-  TweakXL-reachable; removing it entirely would need redscript (=> harness-
-  blocked). Facet e is therefore explicitly scoped to **flatten the data
-  curves and accept the neutralised engine residual**, not "remove the engine
-  path". Full engine removal stays with facet a (harness-blocked).
-- **Not harness-blocked** (pure data).
+- **Surface — premise REFUTED.** The spike claimed "flatten the `Quality.*`
+  modifier `value` ⇒ tiers collapse". The adversarial review refuted this on
+  public docs: `Quality.*` are `ConstantStatModifier` records with three
+  flats (`statType`/`modifierType`/`value`); tier differentiation is *which*
+  `Quality.*` record is appended to an item's `statModifiers` array (and
+  `Items.*QualityRandomization`), **not** one shared scalar. Overriding bare
+  `value` does not de-tier. A correct approach must be re-derived from a real
+  TweakDB dump (the `Quality.*` bodies + the quality-assignment path), not
+  the modifier magnitude.
+- **Not redscript-harness-blocked, but equally TweakDB-dump-blocked.** "Pure
+  data, not blocked" was misleading: the data paths/mechanism cannot be
+  verified without a TweakDB dump, an epistemic gate as hard as facet a's
+  `redscript.log`. The four YAML files are now honest dump-gated stubs (no
+  shippable override), **not** a working scaffold.
+- **Scope ceiling (unchanged):** the engine `RPGManager` scaling *shape* is
+  not TweakXL-reachable; full engine removal stays with facet a
+  (redscript, harness-blocked).
 
 **f — Component / crafting de-tiering** — **SPLIT OUT** to the
 [Realistic Components](../realistic-components/PROGRESS.md) mod. The
@@ -158,9 +165,10 @@ facet here.
 
 ### Spike outcome — facet e (resolved 2026-05-17)
 
-- [x] **Surface:** facet e is **pure TweakXL data, no redscript** → it does
-      **not** inherit the harness `BLOCKED` state and can progress while
-      facets a/c stay blocked.
+- [x] **Surface (later REFUTED):** the spike said facet e is pure TweakXL
+      data that can progress while a/c stay blocked. The adversarial review
+      refuted the *mechanism* (modifier-`value` override ≠ de-tier) and showed
+      it is TweakDB-dump-gated, not free. See "refutation outcome" below.
 - [x] **Cascade claim — REFUTED.** Weapon quality (`Quality.*` stat-modifier
       records + RPGManager) and crafting-component tiers (distinct
       `Items.*Material*` records referenced by `RecipeData`/`RecipeElement`)
@@ -179,25 +187,34 @@ facet here.
       customisation* mods (not composed for de-tiering — they presuppose
       tiers). See README Composition.
 
-### Facet e — deliverable shape (data scaffold landed 2026-05-17)
+### Facet e — deliverable shape (post-refutation)
 
-TweakXL data archive at `r6/tweaks/realisticArsenal/`, four files:
+TweakXL skeleton at `r6/tweaks/realisticArsenal/`, four files — **all four are
+now inert dump-gated stubs**; there is no shippable override. The earlier
+"confirmed-structure CORE" label on 00/02 was **retracted** (refuted, see
+below):
 
-- `00-quality-stats.yaml` — **confirmed-structure CORE.** Flattens every
-  `Quality.*` constant stat-modifier `value` to one neutral constant. Shape
-  confirmed by spike; exact record/flat names best-effort pending a dump.
-- `02-quality-uidata.yaml` — **confirmed-structure CORE.** Collapses
-  `Quality.*` UIData colour/label to one neutral value (kills the rarity
-  rainbow). Overlaps Rarity Color Removed 20767 / facet c — load-order /
-  redundancy note in the file header; deletable if either is the colour path.
-- `01-quality-curves.yaml` — **REQUIRES TWEAKDB DUMP.** Inert stub for the
-  quality→damage curve neutralisation; cannot be authored blind.
-- `03-loot-vendor-upgrade.yaml` — **REQUIRES TWEAKDB DUMP.** Inert stub for
-  de-tiering loot/vendor/upgrade quality assignment (the largest unknown).
+- `00-quality-stats.yaml` — was an active `Quality.* value` override; the
+  override premise is refuted (wrong mechanism). Now an inert stub; the old
+  body is preserved commented as documented-wrong, do-not-uncomment.
+- `02-quality-uidata.yaml` — was an active UIData override with an invented
+  `colorTheme` field / wrong scalar type. Now an inert stub (same treatment).
+  Load-order/redundancy note vs Rarity Color Removed 20767 / facet c kept.
+- `01-quality-curves.yaml` — inert stub (quality→damage curve), unchanged.
+- `03-loot-vendor-upgrade.yaml` — inert stub (loot/vendor/upgrade quality
+  assignment, the largest unknown), unchanged.
 
-**Uninstall / kill story:** TweakXL is non-persistent (in-memory TweakDB
-patch at load only). Deleting the `r6/tweaks/realisticArsenal/` folder fully
-reverts to vanilla next launch — no save migration, no residual state.
+**Safety model (corrected).** Earlier headers claimed "wrong TweakDBID = a
+silent no-op, no error". This is **false and inverted**: per the psiberx
+TweakXL docs an unknown name *creates a new (junk) flat*, and ambiguous
+implicit value types can *throw a load error*. Wrong paths therefore fail
+*semantically* (intended record untouched) **and** can pollute TweakDB / error
+— never a safe no-op. All four headers were corrected.
+
+**Uninstall caveat (corrected).** TweakXL is non-persistent, so deleting the
+folder reverts the *data*; but any item that already rolled a quality has it
+serialised in the save — already-spawned items are not retroactively
+de-tiered. "Clean uninstall" is true for the data layer only.
 
 ### Facet e — falsifiable claims (for refutation)
 
@@ -206,7 +223,8 @@ Every assumption a refutation agent must attack:
 1. The `Quality.*` record paths in `00-quality-stats.yaml` (`Quality.Common`,
    `.CommonPlus`, `.Uncommon[Plus]`, `.Rare[Plus]`, `.Epic[Plus]`,
    `.Legendary[Plus]`, `.IconicItem`) are the real patch-2.x TweakDB record
-   names — UNVERIFIED; wrong IDs fail silently with no error.
+   names — UNVERIFIED; wrong IDs do **not** safely no-op (they create junk
+   flats / can throw — see refutation outcome).
 2. `value` is the correct (and the SOLE) flat lever on the constant
    stat-modifier records — there may be other quality flats, or `value` may be
    the wrong flat name.
@@ -231,6 +249,33 @@ Every assumption a refutation agent must attack:
 9. The facet is verifiable: in fact there is NO in-game verification (data is
    pure-TweakXL so not harness-blocked, but "CI green + parses" proves
    nothing about whether tiers actually flatten in a real build).
+
+### Facet e — refutation outcome (2026-05-17)
+
+Adversarial review (sourced: psiberx TweakXL wiki, CDPR/REDmodding docs).
+Verdicts on the 9 claims:
+
+- **2 — REFUTED (BLOCKER):** `Quality.*` are `ConstantStatModifier`
+  (`statType`/`modifierType`/`value`); tier = *which* `Quality.*` is appended
+  to an item's `statModifiers` (+ `Items.*QualityRandomization`), not one
+  scalar. Overriding `value` does not de-tier.
+- **3 — REFUTED (MAJOR):** `02` used an inline-typed UIData with an invented
+  `colorTheme` field and a String where a CName/TweakDBID is expected.
+- **Unknown-unknown — REFUTED (BLOCKER):** the "wrong name = silent no-op"
+  safety model is *inverted* — TweakXL creates junk flats / can throw on
+  unknown names.
+- **1 SURVIVES-weak** (names exist) · **4 SURVIVES** (premise sound, impl
+  not) · **5 SURVIVES** (and understated) · **6/7/8 UNVERIFIABLE**
+  (dump/game-gated) · **9 SURVIVES — the headline:** no in-game verification;
+  not redscript-blocked but equally dump-blocked.
+- Uninstall claim over-broad (already-rolled item qualities persist in saves).
+
+**Actions taken:** facet e `IMPLEMENTED → BLOCKED (TweakDB-dump-gated)`; spike
+"shape confirmed" marked **REFUTED**; `00`/`02` retracted from "CORE" to inert
+stubs (old bodies preserved commented as documented-wrong); the inverted
+safety model corrected in all four file headers; uninstall caveat corrected.
+A correct facet e must be re-derived from a real TweakDB dump against the
+*quality-assignment* mechanism, not modifier magnitude.
 
 ## C3 — Continuous "learn-by-doing" progression
 
