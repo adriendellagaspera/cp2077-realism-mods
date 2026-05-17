@@ -1,0 +1,23 @@
+# GENERATED — DO NOT HAND-EDIT — REQUIRES TWEAKDB DUMP
+# =============================================================================
+# This file is emitted by  tools/gen_realistic_components.py  (the "recipes"
+# pass). It contains one TweakXL override per crafting recipe whose
+# .elements[].ingredient.item references a tiered/`*Material*` component,
+# retargeting that ingredient to the single real component declared in
+# 00-core.yaml (Items.RealScrapComponent placeholder).
+#
+# It is INTENTIONALLY EMPTY right now: this repo has no TweakDB dump, and the
+# full recipe set is hundreds of records that CANNOT be enumerated blind. A
+# hand-typed list would silently miss recipes and leak tiered components with
+# no error (same silent-failure class as wrong redscript symbols). So the bulk
+# is machine-generated, not hand-authored.
+#
+# TO POPULATE (build-time only — NOT run by the game):
+#   python3 tools/gen_realistic_components.py \
+#       --dump path/to/tweakdb_dump.json \
+#       --target Items.RealScrapComponent \
+#       --recipes-out r6/tweaks/realisticComponents/10-recipes.generated.yaml \
+#       --disassembly-out r6/tweaks/realisticComponents/20-disassembly.generated.yaml
+#
+# Hand-edits to this file will be overwritten on the next generator run.
+# =============================================================================

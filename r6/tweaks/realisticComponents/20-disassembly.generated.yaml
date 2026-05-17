@@ -1,0 +1,27 @@
+# GENERATED — DO NOT HAND-EDIT — REQUIRES TWEAKDB DUMP
+# =============================================================================
+# This file is emitted by  tools/gen_realistic_components.py  (the
+# "disassembly" pass). It contains one TweakXL override per record whose
+# disassembly-yield path produces a tiered/`*Material*` component, retargeting
+# the yield to the single real component declared in 00-core.yaml
+# (Items.RealScrapComponent placeholder).
+#
+# *** WEAKEST-CONFIDENCE AREA ***
+#   Where disassembly yields are actually defined is the least certain claim in
+#   this workstream. The research spike points at the scrapped item's record /
+#   the RPGManager disassembly path, but this has NOT been confirmed against a
+#   real dump. The generator's disassembly pass is heuristic and emits a
+#   per-run summary of what it matched so a human can audit it before shipping.
+#   Treat populated output here with more suspicion than the recipes pass.
+#
+# It is INTENTIONALLY EMPTY right now: no TweakDB dump is present in this repo.
+#
+# TO POPULATE (build-time only — NOT run by the game):
+#   python3 tools/gen_realistic_components.py \
+#       --dump path/to/tweakdb_dump.json \
+#       --target Items.RealScrapComponent \
+#       --recipes-out r6/tweaks/realisticComponents/10-recipes.generated.yaml \
+#       --disassembly-out r6/tweaks/realisticComponents/20-disassembly.generated.yaml
+#
+# Hand-edits to this file will be overwritten on the next generator run.
+# =============================================================================

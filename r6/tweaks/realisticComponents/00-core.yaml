@@ -1,0 +1,87 @@
+# Realistic Components — RC1 core (hand-written, verifiable)
+# =============================================================================
+# WHAT THIS IS
+#   The single small, hand-authored, human-checkable structural core of the
+#   crafting-component de-tiering. Everything else (the hundreds of recipe and
+#   disassembly overrides) is MACHINE-GENERATED from a real TweakDB dump into
+#   the sibling 10-recipes.generated.yaml / 20-disassembly.generated.yaml files
+#   by tools/gen_realistic_components.py. This file proves the TweakXL syntax;
+#   the generator proves the coverage.
+#
+# EPISTEMIC CAVEATS (read before trusting this)
+#   - The target component ID below (Items.RealScrapComponent) is a PLACEHOLDER.
+#     Before this mod ships it MUST be replaced with EITHER:
+#       (a) a dump-confirmed real vanilla component record, OR
+#       (b) an ArchiveXL-added item record that actually exists at runtime.
+#     A TweakDBID that resolves to nothing makes every retargeted recipe
+#     uncraftable. There is no compile-time check for this in TweakXL — a bad
+#     ID fails silently in-game.
+#   - The record type / field path names used here (gamedataCraftingRecipe_Record,
+#     .elements[], .ingredient.item) come from a research spike, NOT from a
+#     verified dump in this repo. If the spike's symbol names are wrong, every
+#     override in this mod is a silent no-op. This is the SAME silent-failure
+#     class as wrong redscript symbols: nothing errors, the change just does
+#     not happen.
+#   - The canonical tier components are believed to be:
+#       Items.CommonMaterial1 Items.UncommonMaterial1 Items.RareMaterial1
+#       Items.EpicMaterial1   Items.LegendaryMaterial1
+#     plus a long, NOT-yet-enumerated tail (other *Material* records). The tail
+#     is exactly why the bulk must be generated from a dump, not hand-typed —
+#     a single missed recipe silently leaks a tiered component back into the
+#     economy with no error.
+#   - NONE of this has been verified in a real game install.
+#
+# UNINSTALL / KILL SWITCH
+#   Delete the folder  r6/tweaks/realisticComponents/  in its entirety.
+#   TweakXL applies no override that is not present on disk; removing the folder
+#   fully reverts to vanilla recipe/disassembly behaviour. No load order, no
+#   migration, no residual state.
+# =============================================================================
+
+# --- The single real target component -----------------------------------------
+# Placeholder ID. See caveat above: replace with a dump-confirmed real vanilla
+# component OR an ArchiveXL-added item before shipping. Declared here so the
+# core and the generated files share ONE canonical symbol.
+#
+# We do not define the item record itself here (it must already exist — either
+# vanilla or ArchiveXL). This block exists to document the contract and to give
+# a single grep target for the chosen ID across the whole mod.
+Items.RealScrapComponent:
+  # If the chosen target is an ArchiveXL item this $base/notes pairing is the
+  # place to record provenance. For a vanilla target, leave as documentation
+  # only and do NOT redefine the record (redefining a vanilla record can cl
+  # obber unrelated fields).
+  $type: gamedataItem_Record
+  # NOTE: intentionally minimal. Real shipping core should either delete this
+  # whole node (vanilla target — record already exists) or point $base at the
+  # concrete ArchiveXL/vanilla template. Documented, not load-bearing yet.
+
+# --- STRUCTURAL PROOF: representative recipe ingredient retargets --------------
+# These 2-3 entries demonstrate the two real TweakXL forms the generator emits.
+# They are illustrative recipe IDs; the generator replaces this hand-set with
+# the exhaustive, dump-derived set in 10-recipes.generated.yaml.
+
+# Form A — per-flat scalar override of a single element's ingredient item.
+# Use when only specific element indices in a known recipe carry a tier
+# component. TweakXL addresses array sub-records by index path.
+Items.Preset_V_Militech_M10AF_Lexington_Crafting:
+  elements[0].ingredient.item: Items.RealScrapComponent
+  elements[1].ingredient.item: Items.RealScrapComponent
+
+# Form B — same per-flat form, single element (the common shape).
+Items.Preset_Nue_Crafting:
+  elements[0].ingredient.item: Items.RealScrapComponent
+
+# Form C — full array replace of a recipe's elements list. Use when the entire
+# ingredient set should collapse to one real component. This is the heavier,
+# economy-affecting form (it can change ingredient COUNT, not just identity);
+# the generator prefers Form A and only emits an array replace when it must
+# rewrite multiple tier ingredients in one recipe. Quantities preserved from
+# the dump are re-emitted by the tool; this hand example keeps one element.
+Items.RecipeExample_FullReplace_Crafting:
+  elements:
+    - !append-once
+      ingredient:
+        item: Items.RealScrapComponent
+        quantity: 1
+      quantity: 1
