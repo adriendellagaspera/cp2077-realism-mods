@@ -120,46 +120,72 @@ seam.
   unknown — do **not** speculatively code until confirmed (phase-1 revert
   lesson). Dry per sub-item: label gone, function intact, kill-switch restores.
 
-**e — Loot / weapon-tier removal** (NEW) · `SCOPE-SPIKE`
+**e — Loot / weapon-tier removal** (NEW) · `PLANNED` (spike done — surface
+decided)
 - **Scope:** a same weapon at drop/vendor/upgrade is one object, not a
-  Common→Iconic ladder. No mod removes the scale (audit: gap, mod-owned).
-- **Surface:** TweakXL/data, **not** a redscript seam — do not design it as a
-  wrap. The spike decides the surface first.
+  Common→Iconic ladder. No mod removes the scale (gap holds — medium
+  confidence, manual Nexus pass still advised).
+- **Surface (decided):** **BUILD via TweakXL data, no redscript.** Override the
+  `Quality.*` stat-modifier records + quality stat curves so every tier
+  resolves identically, and rewrite loot/vendor/upgrade quality entries.
+  `UIData` carries the rarity colour/label (data-side too).
+- **Scope ceiling:** the engine `RPGManager` scaling *shape* is not
+  TweakXL-reachable; removing it entirely would need redscript (=> harness-
+  blocked). Facet e is therefore explicitly scoped to **flatten the data
+  curves and accept the neutralised engine residual**, not "remove the engine
+  path". Full engine removal stays with facet a (harness-blocked).
+- **Not harness-blocked** (pure data).
 
-**f — Component / crafting de-tiering** (NEW) · `SCOPE-SPIKE`
-- **Scope:** replace abstract tiered crafting components (Common→Legendary
-  component items) with **real**, non-tiered components/materials. Compose
-  Preem Weaponsmith 9692 (real modules) + Enhanced Craft 4378 (presets/skin/
-  name/damage-type) + optional Immersive Crafting Access 16154 (−30% cost).
-- **Rejected:** Immersive Components 11880 — it only **renames** tiered
-  components, it does not remove the tiers; it does not serve the thesis.
-- **Same surface as facet e:** killing weapon tiers should cascade component
-  tiers on the same record set — a claim the spike must **validate**, not
-  assume.
+**f — Component / crafting de-tiering** (NEW) · `PLANNED` (spike done — surface
+decided)
+- **Scope:** point every tiered component reference at one real, non-tiered
+  component. **BUILD via TweakXL data:** rewrite each recipe's
+  `RecipeElement` ingredients and the disassembly-yield records to the single
+  real component. Pure data, **not harness-blocked**.
+- **Rejected:** Immersive Components 11880 (renames tiers, does not remove
+  them). **Also do NOT compose Preem Weaponsmith 9692 / Enhanced Craft 4378
+  for de-tiering** — the spike found both *presuppose* tiers (Enhanced Craft
+  multiplies component cost by tier) and pull redscript deps; composing them
+  here would reinforce the scale this facet removes. (They remain *adjacent*
+  customisation mods, not part of de-tiering.)
+- **Main risk:** large recipe surface — every craftable + disassembly record;
+  a missed recipe leaks a tiered component. Needs an exhaustive recipe sweep.
 
 **g — Weapon condition / decay** (NEW) · `COMPOSED` → Weapon Conditioning 10479
 - Compose only the **decay/condition/jamming/repair** layer. Weapon
   Conditioning also ships a **tier-gate** ("no tier-up until repaired"; tier ↔
   enemy rarity) that *reinforces* the scale facet e removes; that layer becomes
-  moot/contradictory here. The audit checklist must confirm the decay layer
-  functions standalone with tiers gone; if it cannot be decoupled, weapon decay
-  reverts to a gap to scope-spike.
+  moot/contradictory here. The composition checklist must confirm the decay
+  layer functions standalone with tiers gone; if it cannot be decoupled,
+  weapon decay reverts to a gap to scope-spike.
 - **This is WEAPON decay. It is NOT C4 SKILL decay.** See C4.
 
-### Scope-spike exit criteria (facets e + f)
+### Spike outcome — facets e + f (resolved 2026-05-17)
 
-The spike's deliverable is a decision, not code:
-- [ ] Surface determined: pure TweakXL data-record edits vs redscript vs
-      hybrid.
-- [ ] Validate (do not assume) that removing weapon tiers auto-cascades
-      component tiers on the same record set, or whether a second edit is
-      needed.
-- [ ] Build-vs-compose per facet: **build** the tier removal (no mod does it);
-      **compose** modules (9692/4378) for the real-component replacement.
-- [ ] Confirm the output is data records. If redscript is required, the facet
-      inherits the harness `BLOCKED` state.
-- [ ] Decide whether e+f ship as one archive or split — default **one**,
-      mirroring the single thesis.
+- [x] **Surface:** both e and f are **pure TweakXL data-record edits, no
+      redscript** → neither inherits the harness `BLOCKED` state.
+- [x] **Cascade claim — REFUTED.** Weapon quality (`Quality.*` stat-modifier
+      records + RPGManager) and crafting-component tiers (distinct
+      `Items.*Material*` records referenced by `RecipeData`/`RecipeElement`)
+      are **two independent TweakDB surfaces**. Removing weapon tiers does
+      **not** cascade to components. Facet f is a **separate, independent
+      recipe-graph rewrite**, not a free consequence of facet e.
+- [x] **Build-vs-compose:** both **BUILD** (TweakXL data, in-mod). Compose is
+      rejected for both — no mod de-tiers without presupposing tiers.
+- [x] **Output is data** (TweakXL YAML), so e+f are *not* harness-blocked —
+      they can progress while facets a/c stay blocked.
+- [x] **Packaging:** ship e+f as one TweakXL data archive (one thesis), kept
+      separate from the redscript facets a/c.
+
+**Implications that touch earlier locked decisions (raise before editing
+those):**
+- The merged thesis wording "removing weapon tiers and removing component
+  tiers are the *same* data surface" (README vision + CHANGELOG) is now
+  **factually wrong** — they are two independent data surfaces (still one mod,
+  one thesis, but two edits). Needs a wording correction.
+- README Composition currently lists Preem Weaponsmith 9692 / Enhanced Craft
+  4378 under crafting; the spike says these reinforce tiers and must not be
+  composed for de-tiering. Needs reconciliation.
 
 ## C3 — Continuous "learn-by-doing" progression
 
