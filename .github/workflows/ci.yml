@@ -247,3 +247,41 @@ jobs:
 
       - name: Parse .reds sources
         run: redscript-cli format -s . >/dev/null
+
+  redscript-typecheck:
+    name: redscript typecheck (vs game bundle)
+    runs-on: ubuntu-latest
+    # Ground-truth semantic type-check: compiles the mod against the game's own
+    # final.redscripts (see TESTING.md). Public runners cannot hold that bundle
+    # (a copyrighted game file), so the script skips cleanly here and this job
+    # stays green. A maintainer with a self-hosted runner can set the
+    # CP2077_REDSCRIPTS repo variable to point at a game install and turn this
+    # into a real compile; only then are the toolchain steps installed.
+    env:
+      CP2077_REDSCRIPTS: ${{ vars.CP2077_REDSCRIPTS }}
+      RS_TAG: v1.0.0-preview.22
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Cache redscript-cli binary
+        id: cache-bin
+        if: env.CP2077_REDSCRIPTS != ''
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/bin/redscript-cli
+          key: redscript-cli-${{ env.RS_TAG }}-${{ runner.os }}
+
+      - uses: dtolnay/rust-toolchain@stable
+        if: env.CP2077_REDSCRIPTS != '' && steps.cache-bin.outputs.cache-hit != 'true'
+
+      - uses: Swatinem/rust-cache@v2
+        if: env.CP2077_REDSCRIPTS != '' && steps.cache-bin.outputs.cache-hit != 'true'
+        with:
+          shared-key: redscript-cli-${{ env.RS_TAG }}
+
+      - name: Install redscript-cli
+        if: env.CP2077_REDSCRIPTS != '' && steps.cache-bin.outputs.cache-hit != 'true'
+        run: cargo install --git https://github.com/jac3km4/redscript --tag ${{ env.RS_TAG }} redscript-cli
+
+      - name: Type-check mod against game bundle
+        run: ./scripts/typecheck.sh
