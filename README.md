@@ -1,6 +1,6 @@
 # cp2077-realism-mods
 
-** Work in progress **
+**Work in progress**
 
 A repository of small, independent Cyberpunk 2077 realism mods. **Each mod
 lives in its own homonymous top-level folder** with its own README and release
