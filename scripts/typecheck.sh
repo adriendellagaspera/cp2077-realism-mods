@@ -55,21 +55,28 @@ if ! command -v "$RS_CLI" >/dev/null 2>&1; then
 fi
 
 # --- Type-check: compile the mod against the real game bundle ---
-# redscript-cli memory-maps the bundle. mmap() fails with ENODEV ("no such
-# device") on filesystems that don't support it -- notably Docker Desktop bind
-# mounts (9p/virtiofs/gRPC-FUSE) used to share a Windows/macOS game install into
-# a dev container. Copy the bundle onto the container's native FS first so the
-# check works there too; on a native install the copy is just a fast local cp.
+# redscript-cli memory-maps BOTH the bundle and the source files it reads.
+# mmap() fails with ENODEV ("failed to map file, no such device") on
+# filesystems that don't support it -- notably Docker Desktop bind mounts
+# (9p/virtiofs/gRPC-FUSE) used to share a Windows/macOS game install (and the
+# repo) into a dev container. So stage the bundle AND the sources onto the
+# container's native FS (TMPDIR) before compiling. On a native install these
+# are just fast local copies.
+#
+# Only the 2.x source set is staged: the folder also holds the mutually
+# exclusive 1.x storage-slot variant, which would not resolve against a 2.x
+# bundle. Passing the staged dir as a single -s keeps the 1.x file out.
 LOCAL_BUNDLE=$(mktemp "${TMPDIR:-/tmp}/cp2077-bundle.XXXXXX.redscripts")
+STAGE=$(mktemp -d "${TMPDIR:-/tmp}/cp2077-src.XXXXXX")
 OUT=$(mktemp "${TMPDIR:-/tmp}/cp2077-typecheck.XXXXXX.redscripts")
-trap 'rm -f "$LOCAL_BUNDLE" "$OUT"' EXIT
+trap 'rm -rf "$LOCAL_BUNDLE" "$STAGE" "$OUT"' EXIT
 cp "$BUNDLE" "$LOCAL_BUNDLE"
+cp "$MOD_SHARED" "$MOD_VARIANT" "$STAGE/"
 
 printf 'redscript typecheck: compiling against %s\n' "$BUNDLE"
 "$RS_CLI" compile \
     -b "$LOCAL_BUNDLE" \
-    -s "$MOD_SHARED" \
-    -s "$MOD_VARIANT" \
+    -s "$STAGE" \
     -o "$OUT" \
     -L warning
 printf 'redscript typecheck: OK\n'
