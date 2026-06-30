@@ -57,9 +57,11 @@ Delete the folder you created in step 3 and restart the game.
 
 Two small pieces of state cooperate:
 
-- `DisassembleGate` — a static `Bool` flipped on/off in
+- `m_stashDisassembleOpen` — a `Bool` added to `CraftingSystem` (a singleton
+  scriptable system) via `@addField`, flipped on/off in
   `FullscreenVendorGameController.OnInitialize` / `OnUninitialize` whenever a stash
-  screen opens or closes.
+  screen opens or closes. (redscript has no mutable static class fields, so the
+  flag lives on a real game object rather than a static.)
 - `DisassemblePolicy` — owns the action name, hint label, and the
   "is this item disassemblable" check, so controllers don't duplicate that logic.
 
