@@ -8,6 +8,11 @@ name: devcontainer
 # (final.redscripts), which is never committed. Full type-checking is a local
 # step (scripts/redscript-lint.sh) on a machine that has the game installed.
 
+# Read-only token: this workflow only checks out the repo and builds/runs a
+# local Docker image — it never writes to the repo or other GitHub resources.
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]
