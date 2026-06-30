@@ -21,7 +21,7 @@ jobs:
       # broken tag never ships. Same caching strategy as ci.yml.
       - name: Cache redscript-cli binary
         id: cache-bin
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/bin/redscript-cli
           key: redscript-cli-${{ env.REDSCRIPT_TAG }}-${{ runner.os }}
