@@ -1,0 +1,12 @@
+{
+  "name": "cp2077-redscript",
+  "build": { "dockerfile": "Dockerfile" },
+  // Sanity-check the toolchain is on PATH when the container comes up.
+  "postCreateCommand": "redscript-cli --help >/dev/null && echo 'redscript-cli ready'"
+
+  // NOTE: final.redscripts (the game's compiled script bundle) is proprietary
+  // CD Projekt Red game data and is deliberately NOT mounted or committed here.
+  // `redscript-cli format` (parse) works without it. For the full type-check
+  // (`redscript-cli lint`), run scripts/redscript-lint.sh on a machine that has
+  // Cyberpunk 2077 installed, pointing at your own local bundle.
+}
