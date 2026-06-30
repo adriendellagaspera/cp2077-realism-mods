@@ -18,17 +18,13 @@ public class DisassemblePolicy {
     }
 }
 
-// Gate: tracks whether the stash screen is open.
-// A single static bool replaces 4 fragile UI-layer wraps.
-class DisassembleGate {
-    private static let s_stashOpen: Bool = false;
-
-    public static func SetOpen(value: Bool) -> Void {
-        DisassembleGate.s_stashOpen = value;
-    }
-
-    public static func IsOpen() -> Bool = DisassembleGate.s_stashOpen;
-}
+// Gate: a single Bool tracking whether the stash screen is open.
+// redscript does not support mutable static class fields, so the flag lives
+// on CraftingSystem itself (a singleton ScriptableSystem) via @addField — the
+// same object whose CanItemBeDisassembled we gate below. A single bool here
+// replaces 4 fragile UI-layer wraps.
+@addField(CraftingSystem)
+public let m_stashDisassembleOpen: Bool;
 
 // --- Core blocker: one wrap at the game-logic layer covers every UI ---
 // CraftingSystem.CanItemBeDisassembled is the canonical gate checked by
@@ -37,7 +33,7 @@ class DisassembleGate {
 
 @wrapMethod(CraftingSystem)
 public final const func CanItemBeDisassembled(itemData: wref<gameItemData>) -> Bool {
-    if !DisassembleGate.IsOpen() { return false; }
+    if !this.m_stashDisassembleOpen { return false; }
     return wrappedMethod(itemData);
 }
 
@@ -46,13 +42,13 @@ public final const func CanItemBeDisassembled(itemData: wref<gameItemData>) -> B
 @wrapMethod(FullscreenVendorGameController)
 protected cb func OnInitialize() -> Bool {
     let result = wrappedMethod();
-    if this.IsStashMode() { DisassembleGate.SetOpen(true); }
+    if this.IsStashMode() { this.SetStashDisassembleGate(true); }
     return result;
 }
 
 @wrapMethod(FullscreenVendorGameController)
 protected cb func OnUninitialize() -> Bool {
-    if this.IsStashMode() { DisassembleGate.SetOpen(false); }
+    if this.IsStashMode() { this.SetStashDisassembleGate(false); }
     return wrappedMethod();
 }
 
@@ -105,6 +101,15 @@ protected cb func OnInventoryItemHoverOut(evt: ref<ItemDisplayHoverOutEvent>) ->
 
 @addMethod(FullscreenVendorGameController)
 private func IsStashMode() -> Bool = (!IsDefined(this.m_vendorUserData) && IsDefined(this.m_storageUserData));
+
+@addMethod(FullscreenVendorGameController)
+private func SetStashDisassembleGate(open: Bool) -> Void {
+    let game = this.GetPlayerControlledObject().GetGame();
+    let craftingSystem = GameInstance.GetScriptableSystemsContainer(game).Get(n"CraftingSystem") as CraftingSystem;
+    if IsDefined(craftingSystem) {
+        craftingSystem.m_stashDisassembleOpen = open;
+    }
+}
 
 @addMethod(FullscreenVendorGameController)
 private func TryDisassembleFromStash(item: wref<gameItemData>, qty: Int32) -> Void {
