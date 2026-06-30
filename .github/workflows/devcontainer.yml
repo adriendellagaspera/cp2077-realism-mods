@@ -1,0 +1,37 @@
+name: devcontainer
+
+# Builds the dev container image and runs a parse-only smoke test inside it, so
+# the committed toolchain (.devcontainer/) can't silently rot. This does NOT
+# replace the `redscript-parse` job in ci.yml — it validates the dev shell.
+#
+# Parse only: `redscript-cli lint` needs the proprietary game bundle
+# (final.redscripts), which is never committed. Full type-checking is a local
+# step (scripts/redscript-lint.sh) on a machine that has the game installed.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.devcontainer/**'
+      - 'scripts/redscript-lint.sh'
+      - '.github/workflows/devcontainer.yml'
+  pull_request:
+    paths:
+      - '.devcontainer/**'
+      - 'scripts/redscript-lint.sh'
+      - '.github/workflows/devcontainer.yml'
+
+jobs:
+  build-and-parse:
+    name: Build image + parse smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build dev container image
+        run: docker build -t cp2077-redscript .devcontainer
+
+      - name: redscript-cli format (parse only)
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/work:ro" -w /work \
+            cp2077-redscript redscript-cli format -s . >/dev/null
