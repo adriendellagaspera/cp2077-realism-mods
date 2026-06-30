@@ -15,7 +15,7 @@ jobs:
     env:
       REDSCRIPT_TAG: v1.0.0-preview.22
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       # Re-validate the source parses before we package an artifact, so a
       # broken tag never ships. Same caching strategy as ci.yml.
