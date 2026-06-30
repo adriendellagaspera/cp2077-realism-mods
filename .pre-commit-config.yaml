@@ -14,3 +14,16 @@ repos:
     hooks:
       - id: commitizen
         stages: [commit-msg]
+  - repo: local
+    hooks:
+      # Offline type-check: compiles the mod against the game's own
+      # final.redscripts bundle (ground truth) without launching the game.
+      # Skips cleanly when CP2077_REDSCRIPTS / redscript-cli are absent, so it
+      # never blocks contributors who don't have the game installed. See
+      # TESTING.md.
+      - id: redscript-typecheck
+        name: redscript typecheck (vs game bundle)
+        entry: scripts/typecheck.sh
+        language: script
+        files: '\.reds$'
+        pass_filenames: false

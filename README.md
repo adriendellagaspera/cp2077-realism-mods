@@ -19,9 +19,18 @@ once dry; see the per-mod folders as they arrive.
 
 ```
 immersive-scrapping/      # the Immersive Scrapping mod (reds + its README)
+scripts/                 # offline checks (typecheck.sh)
 .github/                 # CI, release, issue/PR templates (repo-wide)
-CHANGELOG.md SECURITY.md LICENSE
+CHANGELOG.md SECURITY.md TESTING.md LICENSE
 ```
+
+## Testing
+
+The mods hook onto native game classes, so the reliable offline check is a
+**semantic type-check** that compiles a mod against the game's own
+`final.redscripts` bundle — reproducing the game's startup compile without
+launching it. CI runs sanity + parse checks on every PR; the ground-truth
+type-check runs in the pre-commit hook. See **[TESTING.md](./TESTING.md)**.
 
 ## Releases
 

@@ -1,0 +1,67 @@
+#!/bin/sh
+# Offline redscript type-check for cp2077-realism-mods.
+#
+# Why: the mods are @wrapMethod/@addMethod hooks onto native game classes.
+# A wrong signature, a renamed-between-patches method, or a missing field/enum
+# only surfaces in-game in r6/cache/redscript.log at launch. This script
+# reproduces the game's startup compilation WITHOUT launching the game, by
+# compiling the mod sources against the game's own compiled script bundle
+# (final.redscripts) -- the real source of truth for native definitions.
+#
+# Runtime execution of redscript is impossible offline (no standalone VM), so
+# this is a semantic *type-check*, not a behavioural test. A clean compile
+# means every wrapped method, field, enum and type resolves against the game.
+#
+# Usage:
+#   CP2077_REDSCRIPTS="/path/to/Cyberpunk 2077" ./scripts/typecheck.sh
+#
+# CP2077_REDSCRIPTS points at the GAME ROOT. The script derives the bundle at
+# r6/cache/final.redscripts, preferring the pristine backup final.redscripts.bk
+# (an already-modded bundle would skew the result). If the variable is unset or
+# the bundle is missing, the script SKIPS cleanly (exit 0) so contributors
+# without the game installed -- and public CI -- are never blocked.
+#
+# Tooling: needs `redscript-cli` on PATH. Override the binary with RS_CLI.
+# Scope: patch 2.x only (the -1x variant stays covered by in-game testing).
+set -eu
+
+ROOT=$(CDPATH= cd "$(dirname "$0")/.." && pwd)
+MOD_SHARED="$ROOT/immersive-scrapping/immersiveScrapping.reds"
+MOD_VARIANT="$ROOT/immersive-scrapping/handleStorageSlot_cp2077-2x.reds"
+RS_CLI="${RS_CLI:-redscript-cli}"
+
+skip() {
+    printf 'redscript typecheck: SKIP (%s)\n' "$1"
+    exit 0
+}
+
+# --- Locate the game script bundle (ground truth) ---
+if [ -z "${CP2077_REDSCRIPTS:-}" ]; then
+    skip "CP2077_REDSCRIPTS not set; point it at your Cyberpunk 2077 install to enable"
+fi
+
+CACHE_DIR="$CP2077_REDSCRIPTS/r6/cache"
+if [ -f "$CACHE_DIR/final.redscripts.bk" ]; then
+    BUNDLE="$CACHE_DIR/final.redscripts.bk"
+elif [ -f "$CACHE_DIR/final.redscripts" ]; then
+    BUNDLE="$CACHE_DIR/final.redscripts"
+else
+    skip "no final.redscripts(.bk) under $CACHE_DIR"
+fi
+
+# --- Locate the compiler ---
+if ! command -v "$RS_CLI" >/dev/null 2>&1; then
+    skip "$RS_CLI not found on PATH (install redscript-cli or set RS_CLI)"
+fi
+
+# --- Type-check: compile the mod against the real game bundle ---
+OUT="${TMPDIR:-/tmp}/cp2077-typecheck.redscripts"
+printf 'redscript typecheck: compiling against %s\n' "$BUNDLE"
+"$RS_CLI" compile \
+    -b "$BUNDLE" \
+    -s "$MOD_SHARED" \
+    -s "$MOD_VARIANT" \
+    -o "$OUT" \
+    -L warning
+rm -f "$OUT"
+printf 'redscript typecheck: OK\n'
