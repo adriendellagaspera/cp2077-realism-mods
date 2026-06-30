@@ -55,13 +55,21 @@ if ! command -v "$RS_CLI" >/dev/null 2>&1; then
 fi
 
 # --- Type-check: compile the mod against the real game bundle ---
-OUT="${TMPDIR:-/tmp}/cp2077-typecheck.redscripts"
+# redscript-cli memory-maps the bundle. mmap() fails with ENODEV ("no such
+# device") on filesystems that don't support it -- notably Docker Desktop bind
+# mounts (9p/virtiofs/gRPC-FUSE) used to share a Windows/macOS game install into
+# a dev container. Copy the bundle onto the container's native FS first so the
+# check works there too; on a native install the copy is just a fast local cp.
+LOCAL_BUNDLE=$(mktemp "${TMPDIR:-/tmp}/cp2077-bundle.XXXXXX.redscripts")
+OUT=$(mktemp "${TMPDIR:-/tmp}/cp2077-typecheck.XXXXXX.redscripts")
+trap 'rm -f "$LOCAL_BUNDLE" "$OUT"' EXIT
+cp "$BUNDLE" "$LOCAL_BUNDLE"
+
 printf 'redscript typecheck: compiling against %s\n' "$BUNDLE"
 "$RS_CLI" compile \
-    -b "$BUNDLE" \
+    -b "$LOCAL_BUNDLE" \
     -s "$MOD_SHARED" \
     -s "$MOD_VARIANT" \
     -o "$OUT" \
     -L warning
-rm -f "$OUT"
 printf 'redscript typecheck: OK\n'
