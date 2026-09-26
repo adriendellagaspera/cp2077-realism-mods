@@ -1,39 +1,13 @@
 # cp2077-realism-mods
 
-**Work in progress**
-
-A repository of small, independent Cyberpunk 2077 realism mods. **Each mod
-lives in its own homonymous top-level folder** with its own README and release
-archive, so mods install independently.
+Cyberpunk 2077 mods published from this repository. Each mod has its own directory and installation instructions.
 
 ## Mods
 
-- **[Immersive Scrapping](./immersive-scrapping/README.md)** —
-  [`immersive-scrapping/`](./immersive-scrapping/) — confines item scrapping
-  (disassembly) to the stash screen. Shipped.
+- [Immersive Scrapping](immersive-scrapping/README.md): restricts item disassembly to the stash.
 
-Additional realism mods are developed on integration branches and land here
-once dry; see the per-mod folders as they arrive.
+## Checks and releases
 
-## Layout
+Run `./scripts/typecheck.sh` to compile against the game's `final.redscripts` bundle when it is available locally. See [TESTING.md](TESTING.md) for the checks and requirements.
 
-```
-immersive-scrapping/      # the Immersive Scrapping mod (reds + its README)
-scripts/                 # offline checks (typecheck.sh)
-.github/                 # CI, release, issue/PR templates (repo-wide)
-CHANGELOG.md SECURITY.md TESTING.md LICENSE
-```
-
-## Testing
-
-The mods hook onto native game classes, so the reliable offline check is a
-**semantic type-check** that compiles a mod against the game's own
-`final.redscripts` bundle — reproducing the game's startup compile without
-launching it. CI runs sanity + parse checks on every PR; the ground-truth
-type-check runs in the pre-commit hook. See **[TESTING.md](./TESTING.md)**.
-
-## Releases
-
-Tagging `v*` builds and publishes per-mod archives
-(`<mod>-{version}-cp2077-{2x,1x}.zip`). See each mod's README for the
-game-version archive table and install path.
+Tag a release with `v*` to publish per-mod archives. See each mod's README for compatibility and installation details.
